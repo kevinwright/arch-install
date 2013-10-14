@@ -48,9 +48,14 @@ mount /dev/sda2 /mnt
 mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 
+#Fetch a list of all known UK mirrors
+wget "https://www.archlinux.org/mirrorlist/?country=GB&protocol=http&ip_version=4" -O /etc/pacman.d/mirrorlist.uk
+#uncomment them all
+sed '/^#\S/ s|#||' -i /etc/pacman.d/mirrorlist.uk
+#order according to speed
+rankmirrors -n 6 /etc/pacman.d/mirrorlist.uk > /etc/pacman.d/mirrorlist
+
 #load the raw installation onto the filesystem, and chroot
-#The mirrormist is first updated to a uk-optimised version
-wget "https://www.archlinux.org/mirrorlist/?country=GB&protocol=http&ip_version=4&use_mirror_status=on" -O /etc/pacman.d/mirrorlist
 pacstrap /mnt base
 genfstab -U -p /mnt >> /mnt/etc/fstab
 
