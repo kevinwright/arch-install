@@ -1,35 +1,6 @@
 #!/bin/bash
 
-function ask {
-    while true; do
- 
-        if [ "${2:-}" = "Y" ]; then
-            prompt="Y/n"
-            default=Y
-        elif [ "${2:-}" = "N" ]; then
-            prompt="y/N"
-            default=N
-        else
-            prompt="y/n"
-            default=
-        fi
- 
-        # Ask the question
-        read -p "$1 [$prompt] " REPLY
- 
-        # Default?
-        if [ -z "$REPLY" ]; then
-            REPLY=$default
-        fi
- 
-        # Check if the reply is valid
-        case "$REPLY" in
-            Y*|y*) return 0 ;;
-            N*|n*) return 1 ;;
-        esac
- 
-    done
-}
+
 
 #Set installation locale for UK/GB
 loadkeys uk
@@ -59,8 +30,10 @@ rankmirrors -n 6 /etc/pacman.d/mirrorlist.uk > /etc/pacman.d/mirrorlist
 pacstrap /mnt base
 genfstab -U -p /mnt >> /mnt/etc/fstab
 
-
-arch-chroot /mnt simple-no-swap-postchroot.sh
+wget "https://raw.github.com/kevinwright/arch-install/master/simple-no-swap-postchroot.sh" -O /mnt/root/simple-no-swap-postchroot.sh
+chmod +x /mnt/root/simple-no-swap-postchroot.sh
+arch-chroot /mnt /root/simple-no-swap-postchroot.sh
+rm /mnt/root/simple-no-swap-postchroot.sh
 
 #unmount and reboot
 umount /mnt/{boot,home,}
